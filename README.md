@@ -162,16 +162,21 @@ Ejercicios
 
 - Complete el código de los ficheros de la práctica para implementar un detector de actividad vocal en
   tiempo real tan exacto como sea posible. Tome como objetivo la maximización de la puntuación-F `TOTAL`.
+  -  **__Al implementar el autómata con los cuatro estados, se observa que se ha alcanzado una precisión del 94.084% en el conjunto de señales de la base de datos.__**
+	- FALTA SUMMARY
 
 - Inserte una gráfica en la que se vea con claridad la señal temporal, el etiquetado manual y la detección
   automática conseguida para el fichero grabado al efecto. 
+  - FALTA FOTO!!!!
 
 - Explique, si existen. las discrepancias entre el etiquetado manual y la detección automática.
+	-  **__Aunque en general los resultados son bastante similares, al inicio del audio se aprecia un breve instante en el que, en medio de un silencio largo, se detecta voz. Existen pequeños errores de precisión —tanto en el etiquetado manual como en la detección automática—, apenas perceptibles (alrededor de 0,05 s), especialmente en las transiciones entre voz y silencio. Cabe destacar que, a diferencia del etiquetado manual, la detección automática genera varias etiquetas consecutivas de un mismo tipo de trama. Esto se debe a la eliminación de los *glitches*, es decir, los saltos breves entre voz y silencio y viceversa.__**
 
 - Evalúe los resultados sobre la base de datos `db.v4` con el script `vad_evaluation.pl` e inserte a 
   continuación las tasas de sensibilidad (*recall*) y precisión para el conjunto de la base de datos (sólo
   el resumen).
-
+	-  **__Tal y como se ha indicado en el primer ejercicio, tras haber probado distintos algoritmos en el autómata, el mejor resultado se ha obtenido al implementar la versión con cuatro estados.__**
+	- FALTA SUMMARY
 
 ### Trabajos de ampliación
 
