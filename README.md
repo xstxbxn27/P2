@@ -139,16 +139,23 @@ Ejercicios
 - Etiquete manualmente los segmentos de voz y silencio del fichero grabado al efecto. Inserte, a 
   continuación, una captura de `wavesurfer` en la que se vea con claridad la señal temporal, el contorno de
   potencia y la tasa de cruces por cero, junto con el etiquetado manual de los segmentos.
-
+	-	FALTA FOTO!!!
+	-	**__En el caso de la potencia, la diferencia entre los tramos de silencio y los de voz se aprecia con claridad a lo largo de toda la señal. A partir del audio proporcionado al inicio de la práctica (_prueba.wav_), se observa que los segmentos de silencio no superan aproximadamente los -30 dB, por lo que este valor podría considerarse un umbral adecuado. No obstante, utilizar un umbral fijo no resulta la opción más precisa, ya que cada señal puede presentar características distintas. Por este motivo, hemos optado por calcular la media de las primeras tramas —consideradas como silencio— con el fin de adaptar el umbral de detección a cada caso concreto.__**
 
 - A la vista de la gráfica, indique qué valores considera adecuados para las magnitudes siguientes:
 
 	* Incremento del nivel potencia en dB, respecto al nivel correspondiente al silencio inicial, para
 	  estar seguros de que un segmento de señal se corresponde con voz.
 
+		-	**__En el caso de la potencia, la diferencia entre los tramos de silencio y los de voz se distingue claramente a lo largo de toda la señal. A partir del audio proporcionado al inicio de la práctica (_prueba.wav_), se observa que los segmentos de silencio no superan aproximadamente los -30 dB, por lo que este valor podría considerarse un umbral adecuado. No obstante, utilizar un umbral fijo no es la opción más precisa, ya que cada señal puede presentar características distintas. Por este motivo, hemos optado por calcular la media de las primeras tramas —consideradas como silencio— con el fin de adaptar el umbral de detección a cada caso concreto.__**
+
+
 	* Duración mínima razonable de los segmentos de voz y silencio.
+		-  **__En el fichero WAVE proporcionado se han exagerado algunas pausas entre frases, por lo que decidimos comparar los resultados obtenidos con otro audio de la Práctica 1. A partir de esta comparación, concluimos que los tramos de silencio no suelen durar menos de aproximadamente 0,3 s o 0,4 s. Por otro lado, los tramos de voz presentan una duración más variable, dependiendo de la longitud de la frase o palabra pronunciada. En este caso, el segmento de voz más corto es de 2,8 s y el más largo de 4,1 s, tal como se puede observar en la imagen.__**
+
 
 	* ¿Es capaz de sacar alguna conclusión a partir de la evolución de la tasa de cruces por cero?
+		-  **__No es posible extraer conclusiones definitivas a partir de la evolución de la tasa de cruces por cero, aunque puede resultar útil como apoyo para la toma de decisiones. En los tramos sordos, la ZCR suele oscilar entre valores próximos a 0,5 y 1,5. Es importante destacar que, al inicio de un segmento de voz —y en algunos casos al comienzo de una palabra—, la ZCR aumenta notablemente, lo que puede generar confusión. Por tanto, esta medida solo resulta útil como complemento para perfeccionar el funcionamiento del autómata.__**
 
 
 ### Desarrollo del detector de actividad vocal
