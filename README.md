@@ -140,7 +140,7 @@ Ejercicios
   continuación, una captura de `wavesurfer` en la que se vea con claridad la señal temporal, el contorno de
   potencia y la tasa de cruces por cero, junto con el etiquetado manual de los segmentos.
 	-	FALTA FOTO!!!
-	-	**__En el caso de la potencia, la diferencia entre los tramos de silencio y los de voz se aprecia con claridad a lo largo de toda la señal. A partir del audio proporcionado al inicio de la práctica (_prueba.wav_), se observa que los segmentos de silencio no superan aproximadamente los -30 dB, por lo que este valor podría considerarse un umbral adecuado. No obstante, utilizar un umbral fijo no resulta la opción más precisa, ya que cada señal puede presentar características distintas. Por este motivo, hemos optado por calcular la media de las primeras tramas —consideradas como silencio— con el fin de adaptar el umbral de detección a cada caso concreto.__**
+	-	**__En el caso de la potencia, la diferencia entre los tramos de silencio y los de voz se aprecia con claridad a lo largo de toda la señal. A partir del audio proporcionado al inicio de la práctica (_prueba.wav_), se observa que los segmentos de silencio no superan aproximadamente los -30 dB, por lo que este valor podría considerarse un umbral adecuado. No obstante, utilizar un umbral fijo no resulta la opción más precisa, ya que cada señal puede presentar características distintas. Por este motivo, hemos optado por calcular la media de las primeras tramas —consideradas como silencio— con el fin de adaptar el umbral de detección a cada caso concreto .__**
 
 - A la vista de la gráfica, indique qué valores considera adecuados para las magnitudes siguientes:
 
