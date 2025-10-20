@@ -3,6 +3,7 @@
 #include <stdio.h>
 
 #include "vad.h"
+#include "pav_analysis.h"
 
 const float FRAME_TIME = 10.0F; /* in ms. */
 
@@ -13,7 +14,7 @@ const float FRAME_TIME = 10.0F; /* in ms. */
  */
 
 const char *state_str[] = {
-  "UNDEF", "S", "V", "INIT"
+  "UNDEF", "S", "V", "INIT", "MBV", "MBS"
 };
 
 const char *state2str(VAD_STATE st) {
@@ -42,7 +43,8 @@ Features compute_features(const float *x, int N) {
    * For the moment, compute random value between 0 and 1 
    */
   Features feat;
-  feat.zcr = feat.p = feat.am = (float) rand()/RAND_MAX;
+  feat.zcr = compute_zcr(x,N,16000);
+  feat.p = compute_power(x,N); 
   return feat;
 }
 
@@ -50,11 +52,22 @@ Features compute_features(const float *x, int N) {
  * TODO: Init the values of vad_data
  */
 
-VAD_DATA * vad_open(float rate) {
+VAD_DATA * vad_open(float rate, float umbral0, float umbral1, int frames) {
+  /****AMPLIACIÓN****: 
+    Hemos incluido la posibilidad de entrar por parámetros el número de tramas que se quieren 
+    coger al principio para calcular la media del nuvel de ruido de la señal. Creemos que es 
+    bueno poder elegirlo, ya que en algunos casos puede ser determinante para obtener mejores resultados.
+  */
   VAD_DATA *vad_data = malloc(sizeof(VAD_DATA));
   vad_data->state = ST_INIT;
   vad_data->sampling_rate = rate;
   vad_data->frame_length = rate * FRAME_TIME * 1e-3;
+  vad_data->umbral0 = umbral0;
+  vad_data->umbral1 = umbral1;
+  vad_data->num_total_frame = frames;
+  vad_data->num_frame = 0;
+  vad_data->pot = 0.0;
+  vad_data->zcr1 = 0.0;
   return vad_data;
 }
 
@@ -87,30 +100,63 @@ VAD_STATE vad(VAD_DATA *vad_data, float *x) {
   Features f = compute_features(x, vad_data->frame_length);
   vad_data->last_feature = f.p; /* save feature, in case you want to show */
 
-  switch (vad_data->state) {
-  case ST_INIT:
-    vad_data->state = ST_SILENCE;
-    break;
+  switch (vad_data->state) { 
+    case ST_INIT:
+      if (vad_data->num_frame < vad_data->num_total_frame) {
+        vad_data->pot += pow(10, f.p/10);
+        vad_data->num_frame++;
+        vad_data->zcr1 += f.zcr;
+      } else {
+        vad_data->state = ST_SILENCE;
+        vad_data->pot = 10*log10(vad_data->pot/vad_data->num_total_frame);
+        vad_data->p1 = vad_data->pot + vad_data->umbral1; //p1 será umbral1 dBs más el nivel de potencia que tenemos
+        vad_data->p0 = vad_data->pot + vad_data->umbral0; 
+        vad_data->zcr1 = vad_data->zcr1/vad_data->num_total_frame;
+      }
+      break;
 
-  case ST_SILENCE:
-    if (f.p > 0.95)
-      vad_data->state = ST_VOICE;
-    break;
+    case ST_SILENCE:
+      if (f.p > vad_data->p1)
+        vad_data->state = ST_VOICE;
+      else if (f.p > vad_data->p0)
+        vad_data->state = ST_MB_VOICE;
+      break;
 
-  case ST_VOICE:
-    if (f.p < 0.01)
-      vad_data->state = ST_SILENCE;
-    break;
+    case ST_VOICE:
+      if (f.p < vad_data->p0 && f.zcr < vad_data->zcr1)
+        vad_data->state = ST_SILENCE;
+      else if (f.p < vad_data->p1)
+        vad_data->state = ST_MB_SILENCE;
+      break;
 
-  case ST_UNDEF:
-    break;
+    case ST_MB_SILENCE:
+      if (f.p > vad_data->p1)
+        vad_data->state = ST_VOICE;
+      else if (f.p < vad_data->p0)
+        vad_data->state = ST_SILENCE;
+      break;
+
+    case ST_MB_VOICE:
+      if (f.p > vad_data->p1)
+        vad_data->state = ST_VOICE;
+      else if (f.p < vad_data->p0)
+        vad_data->state = ST_SILENCE;
+      break;
+
+    case ST_UNDEF:
+      break;
   }
 
   if (vad_data->state == ST_SILENCE ||
-      vad_data->state == ST_VOICE)
+      vad_data->state == ST_VOICE ||
+      vad_data->state == ST_MB_SILENCE ||
+      vad_data->state == ST_MB_VOICE)
     return vad_data->state;
-  else
-    return ST_UNDEF;
+
+  if (vad_data->state == ST_INIT)
+    return ST_SILENCE;
+
+  return ST_UNDEF;
 }
 
 void vad_show_state(const VAD_DATA *vad_data, FILE *out) {
