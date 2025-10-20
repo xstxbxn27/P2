@@ -139,23 +139,32 @@ Ejercicios
 - Etiquete manualmente los segmentos de voz y silencio del fichero grabado al efecto. Inserte, a 
   continuación, una captura de `wavesurfer` en la que se vea con claridad la señal temporal, el contorno de
   potencia y la tasa de cruces por cero, junto con el etiquetado manual de los segmentos.
-	-	FALTA FOTO!!!
-	-	**__En el caso de la potencia, la diferencia entre los tramos de silencio y los de voz se aprecia con claridad a lo largo de toda la señal. A partir del audio proporcionado al inicio de la práctica (_prueba.wav_), se observa que los segmentos de silencio no superan aproximadamente los -30 dB, por lo que este valor podría considerarse un umbral adecuado. No obstante, utilizar un umbral fijo no resulta la opción más precisa, ya que cada señal puede presentar características distintas. Por este motivo, hemos optado por calcular la media de las primeras tramas —consideradas como silencio— con el fin de adaptar el umbral de detección a cada caso concreto .__**
+
+	
+	<img src="img/Ej1.png" align="center">
+	<img src="img/Ejercicio1.2.png" align="center">
+
+	**__En la figura anterior se muestra la señal temporal junto con el contorno de potencia y la tasa de cruces por cero obtenida mediante el programa en _Python_. Puede observarse cómo los tramos de voz presentan una potencia claramente superior y una mayor variabilidad en la ZCR, mientras que en los silencios ambos parámetros se mantienen estables y con valores bajos.__**
+
+
 
 - A la vista de la gráfica, indique qué valores considera adecuados para las magnitudes siguientes:
 
 	* Incremento del nivel potencia en dB, respecto al nivel correspondiente al silencio inicial, para
 	  estar seguros de que un segmento de señal se corresponde con voz.
 
-		-	**__En el caso de la potencia, la diferencia entre los tramos de silencio y los de voz se distingue claramente a lo largo de toda la señal. A partir del audio proporcionado al inicio de la práctica (_prueba.wav_), se observa que los segmentos de silencio no superan aproximadamente los -30 dB, por lo que este valor podría considerarse un umbral adecuado. No obstante, utilizar un umbral fijo no es la opción más precisa, ya que cada señal puede presentar características distintas. Por este motivo, hemos optado por calcular la media de las primeras tramas —consideradas como silencio— con el fin de adaptar el umbral de detección a cada caso concreto.__**
+		-  **__En la figura puede observarse cómo los tramos de voz presentan un incremento claro en el nivel de potencia respecto a los silencios, que se mantienen alrededor de los -30 dB. Este valor se considera un umbral adecuado para diferenciar ambos tipos de tramos. Sin embargo, al no ser recomendable aplicar un umbral fijo a todas las señales, se ha optado por calcular la media de las primeras tramas —correspondientes al silencio inicial— con el fin de adaptar el umbral de detección a cada grabación.__**
+
 
 
 	* Duración mínima razonable de los segmentos de voz y silencio.
-		-  **__En el fichero WAVE proporcionado se han exagerado algunas pausas entre frases, por lo que decidimos comparar los resultados obtenidos con otro audio de la Práctica 1. A partir de esta comparación, concluimos que los tramos de silencio no suelen durar menos de aproximadamente 0,3 s o 0,4 s. Por otro lado, los tramos de voz presentan una duración más variable, dependiendo de la longitud de la frase o palabra pronunciada. En este caso, el segmento de voz más corto es de 2,8 s y el más largo de 4,1 s, tal como se puede observar en la imagen.__**
+		-  **__En la figura se muestra la señal temporal junto con el contorno de potencia y la tasa de cruces por cero calculada mediante el programa en _Python_. Se puede observar cómo los tramos de voz presentan valores de potencia elevados y una mayor variación en la ZCR, mientras que los segmentos de silencio se mantienen con potencias bajas y una ZCR estable cercana a cero. Esta representación permite visualizar con claridad la correspondencia entre los cambios de energía y la actividad vocal a lo largo de toda la grabación.__**
+
 
 
 	* ¿Es capaz de sacar alguna conclusión a partir de la evolución de la tasa de cruces por cero?
-		-  **__No es posible extraer conclusiones definitivas a partir de la evolución de la tasa de cruces por cero, aunque puede resultar útil como apoyo para la toma de decisiones. En los tramos sordos, la ZCR suele oscilar entre valores próximos a 0,5 y 1,5. Es importante destacar que, al inicio de un segmento de voz —y en algunos casos al comienzo de una palabra—, la ZCR aumenta notablemente, lo que puede generar confusión. Por tanto, esta medida solo resulta útil como complemento para perfeccionar el funcionamiento del autómata.__**
+		-  **__No se pueden extraer conclusiones definitivas únicamente a partir de la evolución de la tasa de cruces por cero, aunque puede resultar útil como apoyo en la detección de voz. En los tramos de silencio, la ZCR se mantiene baja y estable, mientras que al inicio de los segmentos de voz —y en ocasiones al comienzo de una palabra— aumenta notablemente, lo que puede generar cierta confusión. Por tanto, este parámetro resulta útil solo como complemento para mejorar la precisión del autómata.__**
+
 
 
 ### Desarrollo del detector de actividad vocal
