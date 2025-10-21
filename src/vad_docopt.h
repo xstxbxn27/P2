@@ -16,12 +16,12 @@ typedef struct {
     int verbose;
     int version;
     /* options with arguments */
+    char *init_frames;
     char *input_wav;
     char *output_vad;
     char *output_wav;
-    float umbral0;
-    float umbral1;
-    int frames;
+    char *umbral0;
+    char *umbral1;
     /* special */
     const char *usage_pattern;
     const char *help_message;
@@ -36,14 +36,15 @@ const char help_message[] =
 "   vad --version\n"
 "\n"
 "Options:\n"
-"   -i FILE, --input-wav=FILE   WAVE file for voice activity detection\n"
-"   -o FILE, --output-vad=FILE  Label file with the result of VAD\n"
-"   -w FILE, --output-wav=FILE  WAVE file with silences cleared\n"
-"   -1 REAL, --umbral1=REAL     Umbral de decision voz silencio [default: -30]\n"
+"   -i FILE, --input-wav=FILE       WAVE file for voice activity detection\n"
+"   -o FILE, --output-vad=FILE      Label file with the result of VAD\n"
+"   -w FILE, --output-wav=FILE      WAVE file with silences cleared\n"
+"   -0 VALUE, --umbral0=VALUE       Power lower threshold [default: 1.5]\n"
+"   -1 VALUE, --umbral1=VALUE       Power higher threshold [default: 8.6]\n"
+"   -f VALUE, --init-frames=VALUE   Number of init frames to calculate noise power [default: 10]\n"
 "   -v, --verbose  Show debug information\n"
 "   -h, --help     Show this screen\n"
-"   --version      Show the version of the project\n"
-"";
+"   --version      Show the version of the project";
 
 const char usage_pattern[] =
 "Usage:\n"
@@ -274,6 +275,9 @@ int elems_to_args(Elements *elements, DocoptArgs *args, bool help,
             args->verbose = option->value;
         } else if (!strcmp(option->olong, "--version")) {
             args->version = option->value;
+        } else if (!strcmp(option->olong, "--init-frames")) {
+            if (option->argument)
+                args->init_frames = option->argument;
         } else if (!strcmp(option->olong, "--input-wav")) {
             if (option->argument)
                 args->input_wav = option->argument;
@@ -283,15 +287,12 @@ int elems_to_args(Elements *elements, DocoptArgs *args, bool help,
         } else if (!strcmp(option->olong, "--output-wav")) {
             if (option->argument)
                 args->output_wav = option->argument;
-        } else if (!strcmp(option->olong, "--alpha0")) {
+        } else if (!strcmp(option->olong, "--umbral0")) {
             if (option->argument)
-                args->umbral0 = atof(option->argument);
-        } else if (!strcmp(option->olong, "--alpha1")) {
+                args->umbral0 = option->argument;
+        } else if (!strcmp(option->olong, "--umbral1")) {
             if (option->argument)
-                args->umbral1 = atof(option->argument);
-        } else if (!strcmp(option->olong, "--init-frames")) {
-            if (option->argument)
-                args->frames = atoi(option->argument);
+                args->umbral1 = option->argument;
         }
     }
     /* commands */
@@ -312,9 +313,7 @@ int elems_to_args(Elements *elements, DocoptArgs *args, bool help,
 
 DocoptArgs docopt(int argc, char *argv[], bool help, const char *version) {
     DocoptArgs args = {
-        0, 0, 0, NULL, NULL, NULL, 1.5, 8.6, 10, 
-        //El valor 1.5 corresponde al umbral0, el 8.6 corresponde al umbral1, mientras que el 10 corresponde al número de frames.
-        //Con estos valores hemos obtenido los mejores resultados
+        0, 0, 0, (char*) "10", NULL, NULL, NULL, (char*) "1.5", (char*) "8.6",
         usage_pattern, help_message
     };
     Tokens ts;
@@ -326,14 +325,14 @@ DocoptArgs docopt(int argc, char *argv[], bool help, const char *version) {
         {"-h", "--help", 0, 0, NULL},
         {"-v", "--verbose", 0, 0, NULL},
         {NULL, "--version", 0, 0, NULL},
+        {"-f", "--init-frames", 1, 0, NULL},
         {"-i", "--input-wav", 1, 0, NULL},
         {"-o", "--output-vad", 1, 0, NULL},
         {"-w", "--output-wav", 1, 0, NULL},
         {"-0", "--umbral0", 1, 0, NULL},
-        {"-1", "--umbral1", 1, 0, NULL},
-        {"-f", "--init-frames", 1, 0, NULL}
+        {"-1", "--umbral1", 1, 0, NULL}
     };
-    Elements elements = {0, 0, 7, commands, arguments, options};
+    Elements elements = {0, 0, 9, commands, arguments, options};
 
     ts = tokens_new(argc, argv);
     if (parse_args(&ts, &elements))
