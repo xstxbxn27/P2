@@ -143,15 +143,15 @@ Ejercicios
 	* Incremento del nivel potencia en dB, respecto al nivel correspondiente al silencio inicial, para
 	  estar seguros de que un segmento de señal se corresponde con voz.
 	  
-	__En el caso de la potencia, los tramos de silencio y voz se diferencian bastante bien a lo largo de toda la señal. Utilizando el audio que se nos proporciona al inicio de la práctica _prueba.wav_, podríamos utilizar -30dBs como umbral, ya que a lo largo de la señal los tramos de silencio no superan este valor. Sin embargo, imponer siempre un mismo umbral no es la mejor opción. Por ese motivo, hemos optado por realizar la media de las primeras tramas (que se consideran silencio) para así poder personalizar el estudio para cada señal.__
+	__En el caso de la potencia, los segmentos de silencio y de voz se distinguen con bastante claridad a lo largo de toda la señal. Si usamos el audio proporcionado al inicio de la práctica, prueba.wav, podríamos fijar un umbral en -30 dB, ya que en toda la señal las partes de silencio no superan ese nivel. No obstante, aplicar siempre un único umbral no resulta la opción más adecuada. Por ello, hemos decidido calcular la media de las primeras tramas (que se suponen de silencio) para poder adaptar el estudio a cada señal de manera específica.__
 
 	* Duración mínima razonable de los segmentos de voz y silencio.
 
-	__En el fichero _WAVE_ que se nos proporciona se ha exagerado alguna pausa entre frases, por lo que decidimos comparar los resultados obtenidos con otro audio de la práctica 1, llegando a la conclusión de que los tramos de silencio no suelen durar menos de 0,3s/0,4s aproximadamente. Por otro lado, los tramos de voz tienen duración más variable, debido a la longitud de la frase o palabra que se pronuncie. En este caso, el segmento de voz más corto es de 2,8s y el más largo es de 4,1s, tal i como se puede observar en la imagen.__
+	__En el archivo de tipo WAVE que se nos proporciona se han alargado algunas pausas entre frases, por lo que optamos por comparar los resultados con otro audio de la práctica 1. A partir de esta comparación, concluimos que los intervalos de silencio rara vez son inferiores a unos 0,3 s/0,4 s. En cambio, los segmentos de voz presentan una duración más variable, en función de la longitud de la palabra o frase pronunciada. En este caso concreto, el fragmento de voz más breve es de 2,8 s y el más largo de 4,1 s, tal y como se muestra en la imagen.__
 
 	* ¿Es capaz de sacar alguna conclusión a partir de la evolución de la tasa de cruces por cero?
 
-	__No podemos llegar a ninguna conclusión a partir de la evolución de la tasa de cruces por cero, aunque puede ser útil para acabar de tomar alguna decisión. En los tramos sordos la zcr suele oscilar alrededor de 0,5 y 1,5. Cabe destacar que, justo al empezar un tramo de voz (y en algunos casos al empezar a pronunciar una palabra), la zcr crece notablemente, pudiéndonos llevar a confusión. Por tanto, únicamente son útiles para acabar de perfeccionar el autómata.__
+	__No podemos extraer una conclusión clara a partir de la evolución de la tasa de cruces por cero, aunque sí puede servir como apoyo a la hora de tomar alguna decisión. En los tramos sordos, la zcr suele situarse aproximadamente entre 0,5 y 1,5. Es importante remarcar que, justo al inicio de un segmento de voz (y en algunos casos al comenzar a articular una palabra), la zcr aumenta de forma notable, lo que puede generar confusión. Por ello, su utilidad se limita principalmente a refinar el comportamiento del autómata.__
 
 
 ### Desarrollo del detector de actividad vocal
@@ -161,7 +161,7 @@ Ejercicios
 - Complete el código de los ficheros de la práctica para implementar un detector de actividad vocal en
   tiempo real tan exacto como sea posible. Tome como objetivo la maximización de la puntuación-F `TOTAL`.
 
-__Al implementar el autómata con los cuatro estados, podemos apreciar como hemos obtenido un 94.084% de precisión en el conjunto de señales de la base de datos.__
+__Al implementar el autómata con los cuatro estados, observamos que hemos alcanzado una precisión del 94,084% sobre el conjunto de señales de la base de datos.__
 ```bash
   **************** Summary ****************
   Recall V:477.40/495.55 96.34%   Precision V:477.40/516.54 92.42%   F-score V (2)  : 95.53%
@@ -175,9 +175,9 @@ __Al implementar el autómata con los cuatro estados, podemos apreciar como hemo
 
 - Explique, si existen. las discrepancias entre el etiquetado manual y la detección automática.
 
-__Aunque en general son bastante parecidos, al principio del audio hay un pequeño instante en el que en medio de un silencio laargo detetcta voz. Hay pequeños errores de precisión (tanto a la hora de etiquetar manualmente como al detectarlo), a penas apreciables (0,05s), justo en los cambios entre voz y silencio.__
+__En líneas generales el resultado coincide bastante, pero al comienzo del audio aparece un breve instante en el que, dentro de un silencio prolongado, el sistema marca presencia de voz. Se producen ligeros desajustes de precisión, tanto en el etiquetado manual como en la detección, de unos 0,05 s y casi imperceptibles, que se concentran justo en las transiciones entre zonas de voz y de silencio.__
 
-__Nos gustaria comentar, que a diferencia del etiquetado manual, la detección automática genera varias etiquetas seguidas de un mismo tipo de trama. Esto se debe a haber eliminado los glitches, saltos breves de voz a silencio y viceversa.__
+__Queremos señalar que, a diferencia del etiquetado manual, la detección automática produce varias etiquetas consecutivas del mismo tipo de trama. Esto ocurre porque se han eliminado los glitches, es decir, esos cambios muy breves de voz a silencio y de silencio a voz.__
 
 - Evalúe los resultados sobre la base de datos `db.v4` con el script `vad_evaluation.pl` e inserte a 
   continuación las tasas de sensibilidad (*recall*) y precisión para el conjunto de la base de datos (sólo
