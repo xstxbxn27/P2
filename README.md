@@ -139,53 +139,63 @@ Ejercicios
 - Etiquete manualmente los segmentos de voz y silencio del fichero grabado al efecto. Inserte, a 
   continuación, una captura de `wavesurfer` en la que se vea con claridad la señal temporal, el contorno de
   potencia y la tasa de cruces por cero, junto con el etiquetado manual de los segmentos.
-
-	
-	<img src="img/Ej1.png" align="center">
-	<img src="img/Ejercicio1.2.png" align="center">
-
-	**__En la figura anterior se muestra la señal temporal junto con el contorno de potencia y la tasa de cruces por cero obtenida mediante el programa en _Python_. Puede observarse cómo los tramos de voz presentan una potencia claramente superior y una mayor variabilidad en la ZCR, mientras que en los silencios ambos parámetros se mantienen estables y con valores bajos.__**
-
+<img src="img/Ejercicio1_P2.png" align="center">
 
 
 - A la vista de la gráfica, indique qué valores considera adecuados para las magnitudes siguientes:
 
 	* Incremento del nivel potencia en dB, respecto al nivel correspondiente al silencio inicial, para
 	  estar seguros de que un segmento de señal se corresponde con voz.
-
-		-  **__En la figura puede observarse cómo los tramos de voz presentan un incremento claro en el nivel de potencia respecto a los silencios, que se mantienen alrededor de los -30 dB. Este valor se considera un umbral adecuado para diferenciar ambos tipos de tramos. Sin embargo, al no ser recomendable aplicar un umbral fijo a todas las señales, se ha optado por calcular la media de las primeras tramas —correspondientes al silencio inicial— con el fin de adaptar el umbral de detección a cada grabación.__**
-
-
+	  
+	__En el caso de la potencia, los segmentos de silencio y de voz se distinguen con bastante claridad a lo largo de toda la señal. Si usamos el audio proporcionado al inicio de la práctica, prueba.wav, podríamos fijar un umbral en -30 dB, ya que en toda la señal las partes de silencio no superan ese nivel. No obstante, aplicar siempre un único umbral no resulta la opción más adecuada. Por ello, hemos decidido calcular la media de las primeras tramas (que se suponen de silencio) para poder adaptar el estudio a cada señal de manera específica.__
 
 	* Duración mínima razonable de los segmentos de voz y silencio.
-		-  **__En la figura se muestra la señal temporal junto con el contorno de potencia y la tasa de cruces por cero calculada mediante el programa en _Python_. Se puede observar cómo los tramos de voz presentan valores de potencia elevados y una mayor variación en la ZCR, mientras que los segmentos de silencio se mantienen con potencias bajas y una ZCR estable cercana a cero. Esta representación permite visualizar con claridad la correspondencia entre los cambios de energía y la actividad vocal a lo largo de toda la grabación.__**
 
-
+	__En el archivo de tipo WAVE que se nos proporciona se han alargado algunas pausas entre frases, por lo que optamos por comparar los resultados con otro audio de la práctica 1. A partir de esta comparación, concluimos que los intervalos de silencio rara vez son inferiores a unos 0,3 s/0,4 s. En cambio, los segmentos de voz presentan una duración más variable, en función de la longitud de la palabra o frase pronunciada. En este caso concreto, el fragmento de voz más breve es de 2,8 s y el más largo de 4,1 s, tal y como se muestra en la imagen.__
 
 	* ¿Es capaz de sacar alguna conclusión a partir de la evolución de la tasa de cruces por cero?
-		-  **__No se pueden extraer conclusiones definitivas únicamente a partir de la evolución de la tasa de cruces por cero, aunque puede resultar útil como apoyo en la detección de voz. En los tramos de silencio, la ZCR se mantiene baja y estable, mientras que al inicio de los segmentos de voz —y en ocasiones al comienzo de una palabra— aumenta notablemente, lo que puede generar cierta confusión. Por tanto, este parámetro resulta útil solo como complemento para mejorar la precisión del autómata.__**
 
+	__No podemos extraer una conclusión clara a partir de la evolución de la tasa de cruces por cero, aunque sí puede servir como apoyo a la hora de tomar alguna decisión. En los tramos sordos, la zcr suele situarse aproximadamente entre 0,5 y 1,5. Es importante remarcar que, justo al inicio de un segmento de voz (y en algunos casos al comenzar a articular una palabra), la zcr aumenta de forma notable, lo que puede generar confusión. Por ello, su utilidad se limita principalmente a refinar el comportamiento del autómata.__
 
 
 ### Desarrollo del detector de actividad vocal
 
+----------------------------------------------
+
 - Complete el código de los ficheros de la práctica para implementar un detector de actividad vocal en
   tiempo real tan exacto como sea posible. Tome como objetivo la maximización de la puntuación-F `TOTAL`.
-  -  **__Al implementar el autómata con los cuatro estados, se observa que se ha alcanzado una precisión del 94.084% en el conjunto de señales de la base de datos.__**
-	- FALTA SUMMARY
+
+__Al implementar el autómata con los cuatro estados, observamos que hemos alcanzado una precisión del 94,084% sobre el conjunto de señales de la base de datos.__
+```bash
+  **************** Summary ****************
+  Recall V:477.40/495.55 96.34%   Precision V:477.40/516.54 92.42%   F-score V (2)  : 95.53%
+  Recall S:282.04/321.17 87.81%   Precision S:282.04/300.18 93.96%   F-score S (1/2): 92.66%
+  ===> TOTAL: 94.084%
+```
 
 - Inserte una gráfica en la que se vea con claridad la señal temporal, el etiquetado manual y la detección
   automática conseguida para el fichero grabado al efecto. 
-  - FALTA FOTO!!!!
+  <img src="img/Ej2.png" align="center">
 
 - Explique, si existen. las discrepancias entre el etiquetado manual y la detección automática.
-	-  **__Aunque en general los resultados son bastante similares, al inicio del audio se aprecia un breve instante en el que, en medio de un silencio largo, se detecta voz. Existen pequeños errores de precisión —tanto en el etiquetado manual como en la detección automática—, apenas perceptibles (alrededor de 0,05 s), especialmente en las transiciones entre voz y silencio. Cabe destacar que, a diferencia del etiquetado manual, la detección automática genera varias etiquetas consecutivas de un mismo tipo de trama. Esto se debe a la eliminación de los *glitches*, es decir, los saltos breves entre voz y silencio y viceversa.__**
+
+__En líneas generales el resultado coincide bastante, pero al comienzo del audio aparece un breve instante en el que, dentro de un silencio prolongado, el sistema marca presencia de voz. Se producen ligeros desajustes de precisión, tanto en el etiquetado manual como en la detección, de unos 0,05 s y casi imperceptibles, que se concentran justo en las transiciones entre zonas de voz y de silencio.__
+
+__Queremos señalar que, a diferencia del etiquetado manual, la detección automática produce varias etiquetas consecutivas del mismo tipo de trama. Esto ocurre porque se han eliminado los glitches, es decir, esos cambios muy breves de voz a silencio y de silencio a voz.__
 
 - Evalúe los resultados sobre la base de datos `db.v4` con el script `vad_evaluation.pl` e inserte a 
   continuación las tasas de sensibilidad (*recall*) y precisión para el conjunto de la base de datos (sólo
   el resumen).
-	-  **__Tal y como se ha indicado en el primer ejercicio, tras haber probado distintos algoritmos en el autómata, el mejor resultado se ha obtenido al implementar la versión con cuatro estados.__**
-	- FALTA SUMMARY
+
+  __Tal y como se ha indicado en el primer ejercicio, tras haber probado diferentes algoritmos en el autómata, el mejor resultado conseguido se ha conseguido implementando los cuatro estados.__
+
+```bash
+  **************** Summary ****************
+  Recall V:477.40/495.55 96.34%   Precision V:477.40/516.54 92.42%   F-score V (2)  : 95.53%
+  Recall S:282.04/321.17 87.81%   Precision S:282.04/300.18 93.96%   F-score S (1/2): 92.66%
+  ===> TOTAL: 94.084%
+```
+
 
 ### Trabajos de ampliación
 
@@ -195,19 +205,54 @@ Ejercicios
   la que se vea con claridad la señal antes y después de la cancelación (puede que `wavesurfer` no sea la
   mejor opción para esto, ya que no es capaz de visualizar varias señales al mismo tiempo).
 
+  __En la siguiente imagen podemos observar la señal de audio original:__
+  <img src="img/Ejercicio3_P2_Original.png" align="center">
+
+  __Seguidamente, observamos la imagen con la señal de audio modificada añadiendo ceros en las tramas detectadas como silencios:__
+  <img src="img/Ejercicio3_P2_SilencioCero.png" align="center">
+
+  __Visualmente, podemos concluir que el autómata funciona correctamente, ya que en la mayoría de tramos de la señal original donde realmente había silencios se han modificado y ahora toman el valor de cero.__
+
+  __Si utilizamos la señal modificada _prueba_out.wav_ con las tramas de silencio a cero, podemos volvemos a ejecutar el programa para generar un nuevo .vad. Si lo comparamos con el .lab de la señal original obtenemos un mejor resultado.__
+
+  ```bash
+  **************** prueba.lab ****************
+  Recall V:  6.94/6.94  100.00%   Precision V:  6.94/8.24   84.22%   F-score V (2)  : 96.39%
+  Recall S:  1.83/3.13   58.45%   Precision S:  1.83/1.83  100.00%   F-score S (1/2): 87.55%
+  ===> prueba.lab: 91.864%
+  ```
+
+  ```bash
+  **************** prueba.lab ****************
+  Recall V:  6.94/6.94  100.00%   Precision V:  6.94/8.03   86.42%   F-score V (2)  : 96.95%
+  Recall S:  2.04/3.13   65.19%   Precision S:  2.04/2.04  100.00%   F-score S (1/2): 90.35%
+  ===> prueba.lab: 93.593%
+  ```
+
+  __Como se aprecia en el segundo resultado, que corresponde al obtenido con la señal modificada _prueba_out.wav_ con las tramas de silencio a cero, hemos obtenido un mejor resultado que con la señal original.__
+
 #### Gestión de las opciones del programa usando `docopt_c`
 
 - Si ha usado `docopt_c` para realizar la gestión de las opciones y argumentos del programa `vad`, inserte
   una captura de pantalla en la que se vea el mensaje de ayuda del programa.
 
+ <img src="img/Ejercicio4_P2_docopt_c.png" align="center">  
+
+__En el programa de ayuda se ha añadido la opción de introducir dos umbrales. _umbral0_ corresponde al valor máximo para que la voz pase a ser considerada como silencio, mientras que _umbral1_ es el mínimo valor para pasar de silencio a voz. Este valor lo hemos decidido poner en 8.6 ya que es el valor con el que mejor resultado hemos obtenido.__
+
+__Además, hemos añadido la opción de elegir el número de tramas que se utilizan para obtener la potencia media del ruido de la señal.__
 
 ### Contribuciones adicionales y/o comentarios acerca de la práctica
+
+----------------------------------------------
 
 - Indique a continuación si ha realizado algún tipo de aportación suplementaria (algoritmos de detección o 
   parámetros alternativos, etc.).
 
 - Si lo desea, puede realizar también algún comentario acerca de la realización de la práctica que
   considere de interés de cara a su evaluación.
+
+  __Hemos decidido incluir el parámetro de la tasa de cruces por cero en la evaluación de la señal para conseguir un autómata más completo y preciso ya que en nuestra señal particular y otras estudiadas, la mejora es más perceptible.__
 
 
 ### Antes de entregar la práctica
