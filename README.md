@@ -135,31 +135,62 @@ Ejercicios
 - Etiquete manualmente los segmentos de voz y silencio del fichero grabado al efecto. Inserte, a 
   continuación, una captura de `wavesurfer` en la que se vea con claridad la señal temporal, el contorno de
   potencia y la tasa de cruces por cero, junto con el etiquetado manual de los segmentos.
+<img src="img/Ejercicio1_P2.png" align="center">
 
 
 - A la vista de la gráfica, indique qué valores considera adecuados para las magnitudes siguientes:
 
 	* Incremento del nivel potencia en dB, respecto al nivel correspondiente al silencio inicial, para
 	  estar seguros de que un segmento de señal se corresponde con voz.
+	  
+	__En el caso de la potencia, los tramos de silencio y voz se diferencian bastante bien a lo largo de toda la señal. Utilizando el audio que se nos proporciona al inicio de la práctica _prueba.wav_, podríamos utilizar -30dBs como umbral, ya que a lo largo de la señal los tramos de silencio no superan este valor. Sin embargo, imponer siempre un mismo umbral no es la mejor opción. Por ese motivo, hemos optado por realizar la media de las primeras tramas (que se consideran silencio) para así poder personalizar el estudio para cada señal.__
 
 	* Duración mínima razonable de los segmentos de voz y silencio.
 
+	__En el fichero _WAVE_ que se nos proporciona se ha exagerado alguna pausa entre frases, por lo que decidimos comparar los resultados obtenidos con otro audio de la práctica 1, llegando a la conclusión de que los tramos de silencio no suelen durar menos de 0,3s/0,4s aproximadamente. Por otro lado, los tramos de voz tienen duración más variable, debido a la longitud de la frase o palabra que se pronuncie. En este caso, el segmento de voz más corto es de 2,8s y el más largo es de 4,1s, tal i como se puede observar en la imagen.__
+
 	* ¿Es capaz de sacar alguna conclusión a partir de la evolución de la tasa de cruces por cero?
+
+	__No podemos llegar a ninguna conclusión a partir de la evolución de la tasa de cruces por cero, aunque puede ser útil para acabar de tomar alguna decisión. En los tramos sordos la zcr suele oscilar alrededor de 0,5 y 1,5. Cabe destacar que, justo al empezar un tramo de voz (y en algunos casos al empezar a pronunciar una palabra), la zcr crece notablemente, pudiéndonos llevar a confusión. Por tanto, únicamente son útiles para acabar de perfeccionar el autómata.__
 
 
 ### Desarrollo del detector de actividad vocal
 
+----------------------------------------------
+
 - Complete el código de los ficheros de la práctica para implementar un detector de actividad vocal en
   tiempo real tan exacto como sea posible. Tome como objetivo la maximización de la puntuación-F `TOTAL`.
 
+__Al implementar el autómata con los cuatro estados, podemos apreciar como hemos obtenido un 94.084% de precisión en el conjunto de señales de la base de datos.__
+```bash
+  **************** Summary ****************
+  Recall V:477.40/495.55 96.34%   Precision V:477.40/516.54 92.42%   F-score V (2)  : 95.53%
+  Recall S:282.04/321.17 87.81%   Precision S:282.04/300.18 93.96%   F-score S (1/2): 92.66%
+  ===> TOTAL: 94.084%
+```
+
 - Inserte una gráfica en la que se vea con claridad la señal temporal, el etiquetado manual y la detección
   automática conseguida para el fichero grabado al efecto. 
+  <img src="img/Ej2.png" align="center">
 
 - Explique, si existen. las discrepancias entre el etiquetado manual y la detección automática.
+
+__Aunque en general son bastante parecidos, al principio del audio hay un pequeño instante en el que en medio de un silencio laargo detetcta voz. Hay pequeños errores de precisión (tanto a la hora de etiquetar manualmente como al detectarlo), a penas apreciables (0,05s), justo en los cambios entre voz y silencio.__
+
+__Nos gustaria comentar, que a diferencia del etiquetado manual, la detección automática genera varias etiquetas seguidas de un mismo tipo de trama. Esto se debe a haber eliminado los glitches, saltos breves de voz a silencio y viceversa.__
 
 - Evalúe los resultados sobre la base de datos `db.v4` con el script `vad_evaluation.pl` e inserte a 
   continuación las tasas de sensibilidad (*recall*) y precisión para el conjunto de la base de datos (sólo
   el resumen).
+
+  __Tal y como se ha indicado en el primer ejercicio, tras haber probado diferentes algoritmos en el autómata, el mejor resultado conseguido se ha conseguido implementando los cuatro estados.__
+
+```bash
+  **************** Summary ****************
+  Recall V:477.40/495.55 96.34%   Precision V:477.40/516.54 92.42%   F-score V (2)  : 95.53%
+  Recall S:282.04/321.17 87.81%   Precision S:282.04/300.18 93.96%   F-score S (1/2): 92.66%
+  ===> TOTAL: 94.084%
+```
 
 
 ### Trabajos de ampliación
@@ -170,19 +201,54 @@ Ejercicios
   la que se vea con claridad la señal antes y después de la cancelación (puede que `wavesurfer` no sea la
   mejor opción para esto, ya que no es capaz de visualizar varias señales al mismo tiempo).
 
+  __En la siguiente imagen podemos observar la señal de audio original:__
+  <img src="img/Ejercicio3_P2_Original.png" align="center">
+
+  __Seguidamente, observamos la imagen con la señal de audio modificada añadiendo ceros en las tramas detectadas como silencios:__
+  <img src="img/Ejercicio3_P2_SilencioCero.png" align="center">
+
+  __Visualmente, podemos concluir que el autómata funciona correctamente, ya que en la mayoría de tramos de la señal original donde realmente había silencios se han modificado y ahora toman el valor de cero.__
+
+  __Si utilizamos la señal modificada _prueba_out.wav_ con las tramas de silencio a cero, podemos volvemos a ejecutar el programa para generar un nuevo .vad. Si lo comparamos con el .lab de la señal original obtenemos un mejor resultado.__
+
+  ```bash
+  **************** prueba.lab ****************
+  Recall V:  6.94/6.94  100.00%   Precision V:  6.94/8.24   84.22%   F-score V (2)  : 96.39%
+  Recall S:  1.83/3.13   58.45%   Precision S:  1.83/1.83  100.00%   F-score S (1/2): 87.55%
+  ===> prueba.lab: 91.864%
+  ```
+
+  ```bash
+  **************** prueba.lab ****************
+  Recall V:  6.94/6.94  100.00%   Precision V:  6.94/8.03   86.42%   F-score V (2)  : 96.95%
+  Recall S:  2.04/3.13   65.19%   Precision S:  2.04/2.04  100.00%   F-score S (1/2): 90.35%
+  ===> prueba.lab: 93.593%
+  ```
+
+  __Como se aprecia en el segundo resultado, que corresponde al obtenido con la señal modificada _prueba_out.wav_ con las tramas de silencio a cero, hemos obtenido un mejor resultado que con la señal original.__
+
 #### Gestión de las opciones del programa usando `docopt_c`
 
 - Si ha usado `docopt_c` para realizar la gestión de las opciones y argumentos del programa `vad`, inserte
   una captura de pantalla en la que se vea el mensaje de ayuda del programa.
 
+ <img src="img/Ejercicio4_P2_docopt_c.png" align="center">  
+
+__En el programa de ayuda se ha añadido la opción de introducir dos umbrales. _umbral0_ corresponde al valor máximo para que la voz pase a ser considerada como silencio, mientras que _umbral1_ es el mínimo valor para pasar de silencio a voz. Este valor lo hemos decidido poner en 8.6 ya que es el valor con el que mejor resultado hemos obtenido.__
+
+__Además, hemos añadido la opción de elegir el número de tramas que se utilizan para obtener la potencia media del ruido de la señal.__
 
 ### Contribuciones adicionales y/o comentarios acerca de la práctica
+
+----------------------------------------------
 
 - Indique a continuación si ha realizado algún tipo de aportación suplementaria (algoritmos de detección o 
   parámetros alternativos, etc.).
 
 - Si lo desea, puede realizar también algún comentario acerca de la realización de la práctica que
   considere de interés de cara a su evaluación.
+
+  __Hemos decidido incluir el parámetro de la tasa de cruces por cero en la evaluación de la señal para conseguir un autómata más completo y preciso ya que en nuestra señal particular y otras estudiadas, la mejora es más perceptible.__
 
 
 ### Antes de entregar la práctica
